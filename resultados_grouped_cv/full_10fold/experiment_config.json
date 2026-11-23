@@ -1,0 +1,31 @@
+{
+  "data_dir": "/content/drive/MyDrive/UFRB-ESD/data",
+  "output_dir": "/content/drive/MyDrive/UFRB-ESD/resultados_grouped_cv/full_10fold",
+  "manifest_path": "/content/drive/MyDrive/UFRB-ESD/group_manifest.csv",
+  "feature_cache_dir": "/content/drive/MyDrive/UFRB-ESD/resultados_grouped_cv/feature_cache",
+  "seed": 42,
+  "n_splits": 10,
+  "inner_splits": 9,
+  "sample_rate": 16000,
+  "duration_seconds": 1.0,
+  "segment_hop_seconds": 0.1,
+  "n_mfcc": 13,
+  "n_mels": 40,
+  "frame_length": 1024,
+  "frame_step": 512,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "max_epochs": 100,
+  "patience": 20,
+  "models": [
+    "MLP",
+    "CNN2D",
+    "ResNet18",
+    "ResNet50"
+  ],
+  "keep_fold_models": false,
+  "resume": true,
+  "quick_test": false,
+  "quick_test_epochs": 2,
+  "verbose": 2
+}

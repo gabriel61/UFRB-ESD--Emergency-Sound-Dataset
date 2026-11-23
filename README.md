@@ -1,61 +1,89 @@
-# Dataset para Classificação de Sons Emergenciais em Dispositivos Vestíveis para Deficientes Auditivos
-*(Dataset for Classification of Emergency Sounds in Wearable Devices for the Hearing Impaired)*
+# UFRB-ESD — Emergency Sound Dataset
 
-Trabalho de Conclusão de Curso (TCC) em Engenharia de Computação pela Universidade Federal do Recôncavo da Bahia (UFRB).
+Código e resultados experimentais do artigo **UFRB-ESD: Dataset para Classificação de Sons Emergenciais em Dispositivos Vestíveis para Deficientes Auditivos**, publicado na Revista Eletrônica de Ciências Exatas e Tecnológicas (RECET).
 
-**Autor:** Gabriel Sampaio de Oliveira, 
-**Orientador:** Prof. Dr. Igor Dantas dos Santos Miranda
+**Autores:** Gabriel Sampaio de Oliveira e Igor Dantas dos Santos Miranda — Universidade Federal do Recôncavo da Bahia (UFRB), Brasil.
 
----
+- [Artigo — DOI: 10.66983/recet.v7i1.5864](https://doi.org/10.66983/recet.v7i1.5864)
+- [Dataset — DOI: 10.5281/zenodo.17517988](https://doi.org/10.5281/zenodo.17517988)
 
-## 📝 Resumo
+## Conjunto de dados e protocolo experimental
 
-A escassez de conjuntos de dados adequados para a classificação de sons emergenciais em tempo real representa um desafio para o desenvolvimento de tecnologias assistivas para pessoas com deficiência auditiva. Este trabalho apresenta a construção e validação de um novo dataset de áudio, contendo 2.849 clipes de 1 segundo em nove classes de sons críticos. Para validar a eficácia do dataset, quatro arquiteturas de redes neurais com complexidade crescente (MLP, CNN, ResNet-18 e ResNet-50) foram implementadas e comparadas. Os resultados confirmaram a viabilidade do dataset, com as acurácias variando de 79,30% (MLP) a um máximo de 86,67% (ResNet-18). A análise comparativa indicou que, embora a ResNet-18 tenha obtido o melhor desempenho, a arquitetura CNN 2D apresentou uma performance robusta (81,75%) com uma complexidade significativamente menor. O estudo valida o dataset como um recurso eficaz para pesquisas na área e conclui que a arquitetatura CNN 2D representa o compromisso mais pragmático entre acurácia e eficiência computacional para uma futura implementação em dispositivos vestíveis de baixo custo.
+O UFRB-ESD contém 2.849 clipes de um segundo, distribuídos em nove classes: buzina, cachorro, colisão, explosão, freio, grito, outros, sirene e tiro. A classe *outros* reúne sons cotidianos não emergenciais. Os áudios são disponibilizados separadamente no Zenodo.
 
-## 📦 O Dataset: UFRB-ESD
+O benchmark utiliza 2.827 clipes. Os 22 arquivos excluídos por saturação digital acentuada permanecem no conjunto público e estão identificados em `data_exclusions.csv`. O manifesto registra o caminho, a classe, a origem inferida e a assinatura digital de cada arquivo utilizado no experimento.
 
-Este repositório contém o **código-fonte** e os experimentos. O **dataset UFRB-ESD (UFRB Emergency Sound Dataset)**, contendo os 2.849 arquivos de áudio `.wav` e metadados, está permanentemente hospedado no Zenodo para garantir a sua citação e acessibilidade.
+A avaliação emprega validação cruzada estratificada e agrupada em dez folds, com semente 42. Recortes da mesma gravação-fonte permanecem na mesma partição. A atribuição final contém 868 grupos e é compartilhada por MLP, CNN 2D, ResNet-18 e ResNet-50. A validação interna também respeita os grupos e é utilizada para *early stopping*. As características MFCC são normalizadas com estatísticas calculadas apenas no treinamento de cada rodada.
 
-### **➡️ Link para o Dataset (Zenodo):**
+Parte das relações de origem foi reconstruída pelos nomes dos arquivos. As regras, as correções manuais e a atribuição final dos folds estão incluídas para permitir sua inspeção.
 
-**https://doi.org/10.5281/zenodo.17517988**
+## Resultados de referência
 
-*(O dataset é distribuído sob a licença Creative Commons Attribution 4.0 International)*
+Média ± desvio-padrão nos dez folds externos, em porcentagem:
 
----
+| Modelo | Acurácia | F1 ponderado | F1 macro | AUC macro |
+|---|---:|---:|---:|---:|
+| MLP | 77,32 ± 3,36 | 76,23 ± 3,25 | 66,50 ± 4,99 | 94,06 ± 1,35 |
+| CNN 2D | 77,18 ± 4,24 | 76,30 ± 4,48 | 67,38 ± 3,85 | 94,90 ± 1,22 |
+| ResNet-18 | 75,70 ± 4,08 | 75,66 ± 4,78 | 67,59 ± 5,72 | 93,89 ± 1,32 |
+| ResNet-50 | 74,89 ± 4,16 | 75,11 ± 3,86 | 66,24 ± 4,96 | 94,03 ± 1,57 |
 
-## 💻 Conteúdo do Repositório
+A CNN 2D apresentou a maior AUC macro média e o maior F1 ponderado médio; a MLP obteve a maior acurácia média. A inferência estatística utiliza 5.000 reamostragens dos grupos de gravação-fonte, com correção de Bonferroni nas seis comparações entre modelos por métrica. Todos os intervalos simultâneos das diferenças incluem zero, não indicando superioridade consistente de uma arquitetura.
 
-Este repositório contém o notebook Jupyter (`modelos.ipynb`) utilizado para realizar todos os experimentos descritos no artigo. O notebook inclui:
+As estimativas OOF (*out-of-fold*) agregadas e as médias dos folds são sínteses distintas. Os testes por fold com correção de Holm, também disponibilizados, têm caráter exploratório e não substituem a análise agrupada adotada no artigo.
 
-* Carregamento e pré-processamento dos dados de áudio.
-* Extração de características (MFCCs).
-* Definição, treinamento e avaliação dos 4 modelos:
-    1.  MLP (Baseline não convolucional)
-    2.  CNN 2D (Baseline convolucional)
-    3.  ResNet-18 (Melhor acurácia)
-    4.  ResNet-50
-* Geração de todas as métricas, matrizes de confusão e curvas ROC.
+## Organização do repositório
 
-## 🛠 Requisitos
+| Arquivo ou diretório | Conteúdo |
+|---|---|
+| `modelos.ipynb` | Protocolo de treinamento e avaliação, com saídas da execução de referência |
+| `resultados_artigo.ipynb` | Consulta e geração das tabelas e figuras a partir dos resultados consolidados |
+| `grouped_cv_pipeline.py` | Extração de características, particionamento, modelos e métricas |
+| `ufrb_esd_grouping.py` | Identificação e agrupamento dos recortes por gravação de origem |
+| `group_manifest.csv`, `group_overrides.csv`, `data_exclusions.csv` | Manifesto, correções de agrupamento e exclusões do benchmark |
+| `audit_pcm_quality.py` | Auditoria das amostras PCM dos arquivos originais |
+| `analise_bootstrap_agrupado.cs` | Reamostragem agrupada e comparações entre modelos |
+| `resultados_grouped_cv/full_10fold/` | Previsões OOF, métricas, partições, tabelas, figuras e configuração experimental |
 
-O notebook foi desenvolvido em ambiente Google Colab e utiliza as seguintes bibliotecas principais:
+Registros intermediários de cada treinamento, pesos dos modelos e cache de características não integram esta distribuição. As métricas consolidadas das 40 combinações de modelo e fold estão em `fold_metrics.csv`; as probabilidades OOF estão em `oof_predictions.csv`.
 
-* `tensorflow`
-* `librosa`
-* `numpy`
-* `pandas`
-* `matplotlib`
-* `scikit-learn`
+## Consulta dos resultados
 
-## 🚀 Como Usar
+`resultados_artigo.ipynb` apresenta as tabelas, as curvas ROC, as matrizes de confusão e os resultados do bootstrap. As saídas estão salvas e podem ser consultadas sem executar o notebook. Sua execução requer os arquivos deste repositório, mas não os áudios, TensorFlow ou GPU.
 
-1.  Baixe o dataset UFRB-ESD do link do Zenodo acima.
-2.  Faça o upload do dataset para um local de sua preferência (ex: Google Drive).
-3.  Abra o notebook `modelos.ipynb` no Google Colab ou em um ambiente Jupyter local.
-4.  Ajuste as variáveis de caminho no início do notebook (ex: `DATASET_PATH`, `MODELOS_PATH`) para apontar para onde você salvou os dados.
-5.  Execute as células em sequência para replicar os resultados.
+Para uso local, instale as dependências de consulta e abra o notebook na raiz do repositório:
 
-## 🎓 Como Citar
+```bash
+python -m pip install -r requirements-resultados.txt
+```
 
-Se você utilizar o dataset UFRB-ESD ou este código em sua pesquisa, por favor, cite o nosso trabalho.
+No Google Colab, mantenha os arquivos em `Meu Drive/UFRB-ESD` e abra o notebook correspondente. O caminho é definido na célula de configuração e pode ser ajustado para outra localização.
+
+## Reprodução do experimento
+
+O ambiente da execução de referência está registrado em `resultados_grouped_cv/full_10fold/environment.json`, e os parâmetros estão em `experiment_config.json`. As versões registradas das bibliotecas constam em `requirements.txt`. A versão de Matplotlib não foi registrada; sua dependência é indicada separadamente como biblioteca de visualização. Diferenças de ambiente e hardware podem produzir variações numéricas.
+
+1. Instale as dependências de `requirements.txt` ou utilize a célula de instalação de `modelos.ipynb`.
+2. Obtenha os áudios no Zenodo e organize-os em `data/<classe>/<arquivo>.wav`, na raiz do projeto.
+3. Confira `PROJECT_DIR` e defina `RUN_TRAINING=True` em `modelos.ipynb`. Para o experimento completo, mantenha `QUICK_TEST=False` e `TRAIN_FINAL_MODEL=False`.
+4. Execute as células na ordem. Novos resultados são gravados em `resultados_reproducao/`, separadamente dos arquivos de referência. Esse diretório passa a conter os registros individuais, permitindo retomar uma execução interrompida com a mesma configuração.
+
+Por padrão, `RUN_TRAINING=False` mantém a consulta dos resultados publicados. A etapa opcional de treinamento em todos os dados produz um artefato de implantação e não compõe as métricas OOF.
+
+Se a cópia dos áudios ainda contiver `data/tiro/15720723.wav`, o nome correspondente no manifesto é `data/tiro/1572073.wav`. Confira o arquivo antes de renomeá-lo, sem sobrescrever outro arquivo existente.
+
+O programa `analise_bootstrap_agrupado.cs` recebe, após compilação, o CSV de previsões, dois caminhos de saída e o número opcional de replicações:
+
+```text
+analise_bootstrap_agrupado.exe oof_predictions.csv saida_modelos.csv saida_pares.csv 5000
+```
+
+Os CSVs do bootstrap de referência já estão incluídos. Uma nova análise deve utilizar caminhos de saída distintos para preservá-los.
+
+## Citação e licença
+
+Ao utilizar o conjunto ou o protocolo experimental, cite o artigo e o registro do dataset nos respectivos DOIs. Referência do artigo:
+
+OLIVEIRA, Gabriel Sampaio de; MIRANDA, Igor Dantas dos Santos. UFRB-ESD: Dataset para Classificação de Sons Emergenciais em Dispositivos Vestíveis para Deficientes Auditivos. **Revista Eletrônica de Ciências Exatas e Tecnológicas**, v. 7, n. 1, p. 74–79, 2026. DOI: [10.66983/recet.v7i1.5864](https://doi.org/10.66983/recet.v7i1.5864).
+
+O dataset é distribuído sob a licença Creative Commons Attribution 4.0 International (CC BY 4.0), conforme o registro no Zenodo. Essa indicação refere-se aos áudios e não estabelece uma licença adicional para o código.

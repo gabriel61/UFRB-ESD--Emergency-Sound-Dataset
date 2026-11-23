@@ -1,0 +1,11 @@
+Classe,Arquivos públicos,Excluídos do benchmark,Arquivos no benchmark
+Buzina,228,1,227
+Cachorro,304,4,300
+Colisão,128,2,126
+Explosão,161,9,152
+Freio,154,0,154
+Grito,192,6,186
+Outros,1122,0,1122
+Sirene,301,0,301
+Tiro,259,0,259
+Total,2849,22,2827
